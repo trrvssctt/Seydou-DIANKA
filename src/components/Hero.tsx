@@ -62,7 +62,7 @@ export const Hero = () => {
               <Github className="h-8 w-8" />
             </a>
             <a 
-              href="https://linkedin.com" 
+              href="https://www.linkedin.com/in/seydou-dianka-11a031313/" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-primary-foreground/70 hover:text-accent transition-colors"
