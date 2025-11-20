@@ -1,0 +1,140 @@
+-- Création du schema
+CREATE SCHEMA IF NOT EXISTS app;
+
+-- Users (admins & editors)
+CREATE TABLE app.users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  full_name TEXT,
+  role TEXT NOT NULL DEFAULT 'editor', -- 'admin'|'editor'
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Profiles (profile public du dev)
+CREATE TABLE app.profiles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES app.users(id) ON DELETE CASCADE,
+  display_name TEXT,
+  headline TEXT,
+  bio TEXT,
+  location TEXT,
+  website TEXT,
+  avatar_url TEXT,
+  socials JSONB, -- ex: {"linkedin":"...","github":"..."}
+  seo_title TEXT,
+  seo_description TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Skills
+CREATE TABLE app.skills (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  category TEXT, -- 'frontend','backend','db','devops',...
+  level SMALLINT, -- 0-100 or 1-5
+  sort_order INT DEFAULT 0
+);
+
+-- Services
+CREATE TABLE app.services (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  short_desc TEXT,
+  long_desc TEXT,
+  features JSONB,
+  price_estimate TEXT,
+  slug TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Projects (portfolio)
+CREATE TABLE app.projects (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  short_desc TEXT,
+  description TEXT,
+  role TEXT, -- 'Full-Stack', 'Front-end', etc.
+  tech_stack TEXT[], -- array of strings
+  repo_url TEXT,
+  live_url TEXT,
+  cover_url TEXT,
+  gallery JSONB, -- array of media objects
+  published BOOLEAN DEFAULT TRUE,
+  featured BOOLEAN DEFAULT FALSE,
+  seo_title TEXT,
+  seo_description TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Blog / Articles
+CREATE TABLE app.blog_posts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  excerpt TEXT,
+  content TEXT, -- markdown or html
+  tags TEXT[],
+  author_id UUID REFERENCES app.users(id),
+  published_at TIMESTAMP WITH TIME ZONE,
+  published BOOLEAN DEFAULT FALSE,
+  cover_url TEXT,
+  seo_title TEXT,
+  seo_description TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Media store metadata
+CREATE TABLE app.media (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  filename TEXT NOT NULL,
+  url TEXT NOT NULL,
+  mime TEXT,
+  size_bytes BIGINT,
+  width INT,
+  height INT,
+  created_by UUID REFERENCES app.users(id),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Messages / Contact form
+CREATE TABLE app.messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT,
+  email TEXT,
+  subject TEXT,
+  message TEXT NOT NULL,
+  read BOOLEAN DEFAULT FALSE,
+  source TEXT, -- 'contact-form','email-import'
+  ip_address INET,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Settings (key-value)
+CREATE TABLE app.settings (
+  key TEXT PRIMARY KEY,
+  value JSONB,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Admin actions / audit log
+CREATE TABLE app.audit_logs (
+  id BIGSERIAL PRIMARY KEY,
+  user_id UUID REFERENCES app.users(id),
+  action TEXT NOT NULL,
+  entity TEXT,
+  entity_id TEXT,
+  payload JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Indexes utiles
+CREATE INDEX idx_projects_published ON app.projects(published);
+CREATE INDEX idx_blog_published ON app.blog_posts(published, published_at);
+CREATE INDEX idx_messages_created_at ON app.messages(created_at);
