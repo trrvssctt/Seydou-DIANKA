@@ -1,7 +1,7 @@
 {
 	"name": "vite_react_shadcn_ts",
 	"private": true,
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"type": "module",
 	"engines": {
 		"node": ">=18"
@@ -12,16 +12,12 @@
 		"build:for-server": "node ./scripts/build-and-copy.cjs",
 		"vercel-build": "vite build",
 		"build:dev": "vite build --mode development",
-		"prisma:generate": "prisma generate",
-		"prisma:migrate:dev": "prisma migrate dev --name init",
-		"prisma:migrate:deploy": "prisma migrate deploy",
-		"prisma:studio": "prisma studio",
 		"lint": "eslint .",
 		"preview": "vite preview"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^3.10.0",
-		"@prisma/client": "^5.9.0",
+		"@prisma/client": "^5.22.0",
 		"@radix-ui/react-accordion": "^1.2.11",
 		"@radix-ui/react-alert-dialog": "^1.1.14",
 		"@radix-ui/react-aspect-ratio": "^1.1.7",
@@ -70,7 +66,7 @@
 		"tailwind-merge": "^2.6.0",
 		"tailwindcss-animate": "^1.0.7",
 		"vaul": "^0.9.9",
-		"zod": "^3.25.76"
+		"zod": "^3.25.0"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.32.0",
@@ -92,4 +88,10 @@
 		"typescript-eslint": "^8.38.0",
 		"vite": "^5.4.19"
 	}
+	"engines": {
+    "node": ">=20"
+  },
+  "prisma": {
+    "schema": "src/prisma/schema.prisma"
+  }
 }
