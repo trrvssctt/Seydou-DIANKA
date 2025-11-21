@@ -1,6 +1,7 @@
 // Use Vite env var `VITE_API_BASE` to configure API base in production.
-// Example (Vercel): set VITE_API_BASE to "https://api.example.com/api"
-const API_BASE = import.meta.env.VITE_API_BASE ?? (import.meta.env.DEV ? 'http://localhost:4000/api' : '/api');
+// If not provided, default to the deployed backend on Render so frontend and backend communicate.
+// You can override by setting VITE_API_BASE at build time.
+const API_BASE = import.meta.env.VITE_API_BASE ?? (import.meta.env.DEV ? 'http://localhost:4000/api' : 'https://seydou-dianka-backend.onrender.com/api');
 
 export function setToken(token: string) {
   localStorage.setItem('auth_token', token);
